@@ -76,7 +76,7 @@ public final class ValidationIssue {
 }
 ```
 
-`Coverage.isComplete()` é a resposta honesta à pergunta "isto está mesmo válido?". Enquanto só há 3 regras de 52, `isComplete()` é `false` e o `toString()` do relatório diz-o (`SEM ERROS, MAS COBERTURA PARCIAL: 3 de 53 regras`).
+`Coverage.isComplete()` é a resposta honesta à pergunta "isto está mesmo válido?". Enquanto só há 3 regras de 53, `isComplete()` é `false` e o `toString()` do relatório diz-o (`SEM ERROS, MAS COBERTURA PARCIAL: 3 de 53 regras`).
 
 ### Modo estrito
 
