@@ -1,0 +1,14 @@
+saftao-spec
+Copyright 2026 Bitubi Solutions
+
+Este produto inclui material de terceiros:
+
+1. schema/SAFTAO1.01_01.xsd
+   Esquema SAF-T (AO) versão 1.01_01. Autoria indicada no ficheiro: AGT - Administração Geral Tributária.
+   Notice no ficheiro: "Copyright OECD". Obtido do repositório
+   https://github.com/assoft-portugal/SAF-T-AO (licença MIT, Copyright ASSOFT e contribuidores).
+   Mantido sem alterações. SHA-256: e9a938e1f47ac3d84ffbb26d0d95b827fc769a065c9d20533d0262c12f8c2631
+
+2. conformance/cases/*.xml
+   Derivados do exemplo "SAF-T AO (PurchaseInvoices).xml" do mesmo repositório (licença MIT).
+   Os casos "invalid-*" são mutações desse ficheiro.
