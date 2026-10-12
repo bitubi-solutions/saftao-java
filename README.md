@@ -10,14 +10,14 @@ Implementa a especificação de [`saftao-spec`](https://github.com/bitubi-soluti
 - **Sem dependências** em tempo de execução: usa só o JDK (`javax.xml.validation`, StAX, `java.security`).
 - **Segura por omissão:** rejeita `DOCTYPE`, não resolve entidades externas e não acede à rede.
 
-## Estado: v0.1 (mínima)
+## Estado: v0.2 (em desenvolvimento)
 
 | Nível | O que faz | Estado |
 |---|---|---|
 | 1. Esquema | Valida contra o XSD SAF-T (AO) 1.01_01, incluindo unicidade (`xs:unique`) e referências (`xs:keyref`) | ✅ |
-| 2. Regras de negócio | Regras de `spec/03-business-rules.md` | 🟡 3 de 52 (R-009, R-013, R-050) |
+| 2. Regras de negócio | Regras de `spec/03-business-rules.md` | 🟡 3 de 53 (R-009, R-013, R-050) |
 | 3. Assinatura | Constrói a mensagem a assinar, assina e verifica o `Hash` (RSA, SHA-1, PKCS#1 v1.5) | ✅ |
-| Modelo / geração de ficheiros | Classes para construir um SAF-T | ❌ ainda não |
+| Modelo / geração de ficheiros | Classes para construir um SAF-T | ❌ desenhado, por implementar: ver [`docs/api-design.md`](docs/api-design.md) |
 
 Os parâmetros de assinatura vêm de uma **proposta oficial de 2018**; ver as ressalvas em
 [`spec/04-signature.md`](https://github.com/bitubi-solutions/saftao-spec/blob/main/spec/04-signature.md)
@@ -28,13 +28,21 @@ antes de usar em produção.
 Validar um ficheiro:
 
 ```java
-ValidationReport report = SaftAo.validate(Paths.get("saft.xml"));
-if (!report.isValid()) {
-    for (ValidationIssue issue : report.getIssues()) {
-        System.out.println(issue);   // por exemplo: BUSINESS_RULE[R-009] (linha 63): NumberOfEntries (3) ...
-    }
+ValidationReport report = SaftAo.validate(Paths.get("saft.xml"));   // também File, InputStream, byte[]
+
+for (ValidationIssue issue : report.getErrors()) {
+    System.out.println(issue.getCode() + " " + issue.getPath() + " (linha " + issue.getLine() + ")");
+    System.out.println(issue.getMessage());                 // pt_AO
+    System.out.println(issue.getMessage(Locale.ENGLISH));   // en
 }
+
+System.out.println(report);                // SEM ERROS (cobertura parcial: Esquema: sim · Regras: 3 de 53)
+Coverage coverage = report.getCoverage();  // o que foi verificado e o que falta
 ```
+
+**`hasErrors() == false` não quer dizer "ficheiro válido".** Quer dizer que as verificações feitas não encontraram erros. O que foi feito está em `getCoverage()`; `isComplete()` só é `true` quando o esquema e todas as regras da especificação correm.
+
+Mensagens em `pt_AO` (por defeito) e `en`. Os códigos (`R-009`, `XSD:cvc-pattern-valid`) não mudam com a língua.
 
 Assinar um documento (campo `Hash`):
 

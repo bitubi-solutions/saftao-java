@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>solutions.bitubi</groupId>
+  <groupId>ao.bitubi</groupId>
   <artifactId>saftao-java</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <name>saftao-java</name>
-  <description>Biblioteca Java (8+) para validar e assinar o ficheiro SAF-T (AO). Por Bitubi Solutions.</description>
+  <description>Biblioteca Java (8+) para validar, gerar e assinar o ficheiro SAF-T (AO). Por Bitubi Solutions.</description>
   <url>https://github.com/bitubi-solutions/saftao-java</url>
 
   <licenses>
@@ -80,7 +80,7 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Automatic-Module-Name>solutions.bitubi.saftao</Automatic-Module-Name>
+              <Automatic-Module-Name>ao.bitubi.saftao</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>

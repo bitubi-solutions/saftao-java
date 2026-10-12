@@ -2,6 +2,16 @@
 
 > **Estado: proposta.** Nada disto está implementado, e os exemplos **não foram compilados**. Servem para avaliar o desenho do ponto de vista de quem usa a biblioteca. Só depois de aprovado se implementa e se actualiza `saftao-spec/spec/05-api.md`.
 
+## Decisões tomadas (2026-10-12)
+
+- **Fase 2 só facturação.** A contabilidade (GL) é importante e vem logo a seguir (fase 4, prioritária).
+- **Nomes em inglês**, como o XSD e a API da AGT, incluindo os `enum`.
+- **Mensagens em `pt_AO` (por defeito) e `en`.** Os códigos não mudam com a língua.
+- **Só `BigDecimal`** para valores, sem `String` nos construtores, por rigor.
+- **Pacotes `ao.bitubi.saftao`** (o `solutions.bitubi` só existia por causa do nome já ocupado no GitHub). O `groupId` Maven passa a `ao.bitubi`; publicar no Maven Central exige provar a posse do domínio `bitubi.ao`.
+- **Fase 1 implementada** (esta branch): pacotes, relatório com gravidade, cobertura, código, caminho, mensagens, entradas `Path`/`File`/`InputStream`/`byte[]`. Ficam para depois, porque ainda não têm comportamento: o modo `STRICT` (fase 3) e o aviso de codificação `ENC-001`.
+- Desvios face ao texto abaixo: são **53** regras na especificação (não 52); os problemas vêm por ordem de linha (os sem linha no fim); não há ainda classe `Validator` (só `SaftAo.validate`), entra com o modo estrito; `getCode()` dos erros de esquema é a família do erro (`XSD:cvc-pattern-valid`, `XSD:cvc-identity-constraint`), igual em todos os JDK.
+
 ## Decisões a que isto responde
 
 1. **Âmbito:** a biblioteca **gera e valida** o SAF-T (AO), tudo o que um ERP precisa. A assinatura fica, marcada experimental.
@@ -28,7 +38,7 @@ if (report.hasErrors()) {
         System.out.println(e);   // R-009 SalesInvoices/NumberOfEntries (linha 14): esperado 120, encontrado 119
     }
 }
-System.out.println(report.getCoverage()); // Esquema ✔ · Regras 3 de 52 · Assinatura ✘ (não pedida)
+System.out.println(report.getCoverage()); // Esquema ✔ · Regras 3 de 53 · Assinatura ✘ (não pedida)
 ```
 
 O que muda face ao 0.1:
@@ -52,7 +62,7 @@ public final class ValidationReport {
 public final class Coverage {
     boolean isSchemaChecked();
     Set<String> getRulesChecked();               // ex.: R-009, R-013, R-050
-    Set<String> getRulesNotImplemented();        // as outras 49, para quem quer saber
+    Set<String> getRulesNotImplemented();        // as outras 50, para quem quer saber
     boolean isComplete();                        // esquema + todas as regras da especificação
 }
 
@@ -66,7 +76,7 @@ public final class ValidationIssue {
 }
 ```
 
-`Coverage.isComplete()` é a resposta honesta à pergunta "isto está mesmo válido?". Enquanto só há 3 regras de 52, `isComplete()` é `false` e o `toString()` do relatório diz-o (`SEM ERROS, MAS COBERTURA PARCIAL: 3 de 52 regras`).
+`Coverage.isComplete()` é a resposta honesta à pergunta "isto está mesmo válido?". Enquanto só há 3 regras de 52, `isComplete()` é `false` e o `toString()` do relatório diz-o (`SEM ERROS, MAS COBERTURA PARCIAL: 3 de 53 regras`).
 
 ### Modo estrito
 
@@ -134,9 +144,10 @@ SalesInvoice inv = SalesInvoice.builder()
         .build();
 ```
 
-- Valores monetários são `BigDecimal` (ou `String`, para evitar `double`), nunca `double`.
+- Valores monetários são sempre `BigDecimal`, nunca `double` nem `String`.
 - `build()` falha **cedo** com `IllegalArgumentException` para o que é impossível (data nula, NIF vazio, número sem o padrão). As regras fiscais (somas, NC acima da origem) **não** falham aqui: ficam para o validador.
 - Os nomes seguem os do XSD em inglês (`customerId`, `unitPrice`), para quem tem de consultar a especificação.
+- **Atenção:** os exemplos abaixo ainda mostram valores como `String` (`"250.00"`) e pacotes `solutions.bitubi`. Pela decisão acima passam a `new BigDecimal("250.00")` e `ao.bitubi`.
 
 ### Ajuda de cálculo (opcional, fase posterior)
 
@@ -171,11 +182,11 @@ Módulo separado (`saftao-cli`), para a biblioteca principal continuar sem depen
 ## 5. Estrutura de pacotes
 
 ```
-solutions.bitubi.saftao            SaftAo (fachada), enums públicos
-solutions.bitubi.saftao.model      Header, Customer, Product, SalesInvoice, Line, Tax, Totals, ...
-solutions.bitubi.saftao.write      SaftWriter e as etapas (MasterFilesStage, ...)
-solutions.bitubi.saftao.validate   Validator, ValidationReport, Coverage, ValidationIssue
-solutions.bitubi.saftao.sign       InvoiceSigner, PemKeys   (@Experimental)
+ao.bitubi.saftao            SaftAo (fachada), enums públicos
+ao.bitubi.saftao.model      Header, Customer, Product, SalesInvoice, Line, Tax, Totals, ...
+ao.bitubi.saftao.write      SaftWriter e as etapas (MasterFilesStage, ...)
+ao.bitubi.saftao.validate   Validator, ValidationReport, Coverage, ValidationIssue
+ao.bitubi.saftao.sign       InvoiceSigner, PemKeys   (@Experimental)
 ```
 
 Os pacotes de implementação (`rules`, `internal`) não fazem parte da API pública.
@@ -184,14 +195,11 @@ Os pacotes de implementação (`rules`, `internal`) não fazem parte da API púb
 
 1. **Relatório novo** (gravidade, cobertura, código, caminho). Pequena alteração e desbloqueia o resto.
 2. **Escrita da parte de facturação:** cabeçalho, clientes, produtos, tabela de impostos, facturas de venda. Validada contra o XSD e contra os casos de conformidade.
-3. **Resto das regras** (49 em falta) e modo estrito.
+3. **Resto das regras** (50 em falta) e modo estrito.
 4. **Restantes secções:** contabilidade (GL), documentos de transporte, de conferência, pagamentos, compras.
 5. **Assinatura** na nova forma, depois de confirmado o regime.
 6. **CLI** e publicação.
 
-## Perguntas para ti
+## Perguntas em aberto
 
-- A fase 2 (só facturação de vendas) chega para o primeiro ERP? Ou a contabilidade também é essencial desde o início?
-- Nomes em inglês como no XSD (`customerId`) ou em português (`clienteId`)? Proponho inglês, para coincidir com o XSD e a documentação da AGT.
-- Mensagens só em português ou com inglês também?
-- `BigDecimal` apenas, ou aceitar `String` nos construtores como conveniência?
+- Nenhuma de âmbito. Dúvidas técnicas ficam para a implementação da fase 2 (por exemplo, ficheiro temporário ou duas passagens para escrever os totais do cabeçalho).
