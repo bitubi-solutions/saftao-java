@@ -4,6 +4,8 @@ Biblioteca Java para validar e assinar o ficheiro SAF-T (AO), por Bitubi Solutio
 
 Implementa a especificação de [`saftao-spec`](https://github.com/bitubi-solutions/saftao-spec) e passa os seus testes de conformidade.
 
+> **Aviso.** Este projecto **não é um programa de facturação certificado** e **não foi avaliado, aprovado nem endossado pela AGT** (Administração Geral Tributária). Quem o integrar num software que emite documentos fiscais é responsável por cumprir os requisitos legais aplicáveis, incluindo a certificação do software e o registo como produtor. A assinatura incluída serve para teste e interoperabilidade. Fornecido "tal como está", sem garantias (ver licença).
+
 - **Java 8 ou superior.** Compilada com `--release 8` e testada num JDK 8 real e no JDK 25.
 - **Sem dependências** em tempo de execução: usa só o JDK (`javax.xml.validation`, StAX, `java.security`).
 - **Segura por omissão:** rejeita `DOCTYPE`, não resolve entidades externas e não acede à rede.
